@@ -121,7 +121,7 @@ export const BenchTray: React.FC<BenchTrayProps> = ({
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-3 items-center justify-items-center">
+          <div className="grid grid-cols-5 sm:grid-cols-7 md:grid-cols-9 lg:grid-cols-12 gap-2 items-center justify-items-center">
             {sorted.map((player) => {
               const isStaged = stagedPlayerIds.has(player.id);
               return (

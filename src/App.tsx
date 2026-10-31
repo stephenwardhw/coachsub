@@ -345,7 +345,7 @@ export default function App() {
               const dy = p.fieldPosition.y - py;
               // Aspect ratio weighting (field is ~10:6)
               const dist = Math.sqrt(dx * dx + (dy * 1.6) * (dy * 1.6));
-              if (dist < 10 && dist < minDistance) {
+              if (dist < 8.5 && dist < minDistance) {
                 minDistance = dist;
                 nearestPlayerId = p.id;
               }
@@ -391,8 +391,8 @@ export default function App() {
             if (targetPlayer && targetPlayer.fieldPosition) {
               // Offset slightly up and to the right as explicitly requested:
               // "The icon should then be placed over the existing player and a bit up and to the right so it does not overlap."
-              const stagedX = Math.round(Math.min(94, targetPlayer.fieldPosition.x + 7) * 10) / 10;
-              const stagedY = Math.round(Math.max(6, targetPlayer.fieldPosition.y - 8) * 10) / 10;
+              const stagedX = Math.round(Math.min(94, targetPlayer.fieldPosition.x + 5.5) * 10) / 10;
+              const stagedY = Math.round(Math.max(6, targetPlayer.fieldPosition.y - 6) * 10) / 10;
 
               setState((prev) => ({
                 ...prev,
@@ -556,15 +556,15 @@ export default function App() {
                 >
                   {/* Visual dashed connector line between target and incoming sub */}
                   {targetPlayer && targetPlayer.fieldPosition && (
-                    <svg className="absolute -inset-10 w-28 h-28 pointer-events-none -z-10">
+                    <svg className="absolute -inset-6 w-20 h-20 pointer-events-none -z-10">
                       <line
-                        x1="20"
-                        y1="60"
-                        x2="60"
-                        y2="20"
+                        x1="16"
+                        y1="44"
+                        x2="44"
+                        y2="16"
                         stroke="#34d399"
-                        strokeWidth="2.5"
-                        strokeDasharray="4 3"
+                        strokeWidth="2"
+                        strokeDasharray="3 2"
                       />
                     </svg>
                   )}
@@ -622,8 +622,8 @@ export default function App() {
               if (selectedFieldPlayer) {
                 const targetPos = selectedFieldPlayer.fieldPosition;
                 if (targetPos) {
-                  const stagedX = Math.round(Math.min(94, targetPos.x + 7) * 10) / 10;
-                  const stagedY = Math.round(Math.max(6, targetPos.y - 8) * 10) / 10;
+                  const stagedX = Math.round(Math.min(94, targetPos.x + 5.5) * 10) / 10;
+                  const stagedY = Math.round(Math.max(6, targetPos.y - 6) * 10) / 10;
                   setState((prev) => ({
                     ...prev,
                     players: prev.players.map((p) =>
