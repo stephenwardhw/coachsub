@@ -1,0 +1,44 @@
+# CoachSub Apache SPA & PWA Configuration
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Serve existing files and directories directly
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Route all other requests to index.html for Single Page App
+  RewriteRule ^ index.html [L]
+</IfModule>
+
+# Fallback if mod_rewrite is disabled
+<IfModule !mod_rewrite.c>
+  FallbackResource /index.html
+</IfModule>
+
+# Proper MIME types for PWA
+<IfModule mod_mime.c>
+  AddType application/manifest+json .webmanifest
+  AddType image/svg+xml .svg
+</IfModule>
+
+# Caching Strategy: Never cache sw.js, cache versioned assets long-term
+<IfModule mod_headers.c>
+  # Service worker must never be cached so updates propagate immediately
+  <Files "sw.js">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires "0"
+  </Files>
+
+  # HTML should revalidate
+  <Files "index.html">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+  </Files>
+
+  # Static fingerprinted assets can be cached aggressively
+  <FilesMatch "\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2)$">
+    Header set Cache-Control "max-age=31536000, public, immutable"
+  </FilesMatch>
+</IfModule>
