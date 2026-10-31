@@ -1,0 +1,6 @@
+{
+  "name": "CoachSub - Field & Lineup Manager",
+  "description": "Mobile web application and PWA for coaches to manage field positions, player game-time timers, and staged substitutions across soccer, hockey, lacrosse, and field hockey.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
