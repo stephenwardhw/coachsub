@@ -774,6 +774,13 @@ export default function App() {
         players={state.players}
         onUpdatePlayers={(players) => setState((prev) => ({ ...prev, players }))}
         sport={state.settings.sport}
+        teamName={state.settings.teamName}
+        onUpdateTeamName={(teamName) =>
+          setState((prev) => ({
+            ...prev,
+            settings: { ...prev.settings, teamName },
+          }))
+        }
       />
 
       {/* Backup & Transfer (JSON) Modal */}

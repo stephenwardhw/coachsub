@@ -11,6 +11,7 @@ import {
   RotateCcw,
   Sparkles,
   Plus,
+  Shield,
 } from 'lucide-react';
 
 interface RosterModalProps {
@@ -19,6 +20,8 @@ interface RosterModalProps {
   players: Player[];
   onUpdatePlayers: (players: Player[]) => void;
   sport: SportType;
+  teamName: string;
+  onUpdateTeamName: (teamName: string) => void;
 }
 
 const COLOR_OPTIONS = [
@@ -38,7 +41,10 @@ export const RosterModal: React.FC<RosterModalProps> = ({
   players,
   onUpdatePlayers,
   sport,
+  teamName,
+  onUpdateTeamName,
 }) => {
+  const [currentTeamName, setCurrentTeamName] = useState(teamName);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
@@ -144,7 +150,38 @@ export const RosterModal: React.FC<RosterModalProps> = ({
         </div>
 
         {/* Content Body */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-5">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4">
+          {/* Team Name Setting Card */}
+          <div className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-inner">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 rounded-lg bg-blue-500/20 text-blue-400 border border-blue-500/30 shrink-0">
+                <Shield className="w-4 h-4" />
+              </div>
+              <div>
+                <label htmlFor="teamNameInput" className="text-xs font-bold text-white block cursor-pointer">
+                  Team Name
+                </label>
+                <p className="text-[11px] text-slate-400">
+                  Displayed on match exports, backups, and reports
+                </p>
+              </div>
+            </div>
+
+            <div className="w-full sm:w-auto flex items-center gap-2">
+              <input
+                id="teamNameInput"
+                type="text"
+                value={currentTeamName}
+                onChange={(e) => {
+                  setCurrentTeamName(e.target.value);
+                  onUpdateTeamName(e.target.value);
+                }}
+                placeholder="e.g. United FC"
+                className="w-full sm:w-56 bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm font-semibold text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+
           {/* Add New Player Form */}
           <form
             onSubmit={handleAddPlayer}

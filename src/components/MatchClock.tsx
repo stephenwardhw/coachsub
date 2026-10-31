@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { GoalSide, SportType } from '../types';
 import { formatSeconds } from '../utils/storage';
 import {
@@ -9,7 +9,10 @@ import {
   Flame,
   Download,
   History,
-  SlidersHorizontal,
+  Menu,
+  X,
+  FileJson,
+  Timer,
 } from 'lucide-react';
 
 interface MatchClockProps {
@@ -52,18 +55,30 @@ export const MatchClock: React.FC<MatchClockProps> = ({
   onOpenTimeline,
   subCount,
 }) => {
-  const sportEmoji: Record<SportType, string> = {
-    soccer: '⚽',
-    hockey: '🏒',
-    lacrosse: '🥍',
-    field_hockey: '🏑',
-  };
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const periods = PERIOD_OPTIONS[sport] || PERIOD_OPTIONS.soccer;
 
+  // Close menu when clicking outside
+  useEffect(() => {
+    if (!isMenuOpen) return;
+    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [isMenuOpen]);
+
   return (
-    <header className="bg-slate-950/95 backdrop-blur-md text-white border-b border-slate-800/90 px-2 sm:px-3 py-1.5 flex items-center justify-between gap-1.5 sm:gap-2 shrink-0 select-none z-20 h-11 sm:h-12">
-      {/* Left: Sport selector & Flip field button (ultra-compact) */}
+    <header className="relative bg-slate-950/95 backdrop-blur-md text-white border-b border-slate-800/90 px-2 sm:px-3 py-1.5 flex items-center justify-between gap-1.5 sm:gap-2 shrink-0 select-none z-30 h-11 sm:h-12">
+      {/* Left: Sport selector & Flip field button */}
       <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
         <select
           value={sport}
@@ -143,8 +158,8 @@ export const MatchClock: React.FC<MatchClockProps> = ({
         </button>
       </div>
 
-      {/* Right: Timeline Panel Trigger & Tools */}
-      <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+      {/* Right on Larger Screens: Directly Visible Buttons */}
+      <div className="hidden sm:flex items-center gap-1.5 shrink-0">
         {/* Timeline Log Button */}
         <button
           type="button"
@@ -157,7 +172,7 @@ export const MatchClock: React.FC<MatchClockProps> = ({
           title="Open Substitution Timeline Log"
         >
           <History className="w-3.5 h-3.5 text-emerald-400" />
-          <span className="hidden sm:inline">Timeline</span>
+          <span>Timeline</span>
           {subCount > 0 && (
             <span className="px-1 py-0.2 rounded-full bg-emerald-500 text-slate-950 font-bold text-[9px] font-mono leading-none">
               {subCount}
@@ -165,14 +180,15 @@ export const MatchClock: React.FC<MatchClockProps> = ({
           )}
         </button>
 
-        {/* Reset Timers (Compact Warning Button) */}
+        {/* Reset Timers (Warning Button) */}
         <button
           type="button"
           onClick={onRequestResetTimers}
-          className="p-1.5 rounded-lg bg-red-950/50 hover:bg-red-900/70 border border-red-800/80 text-red-300 transition active:scale-95"
+          className="flex items-center gap-1 px-2 py-1 rounded-lg bg-red-950/50 hover:bg-red-900/70 border border-red-800/80 text-red-300 transition active:scale-95 text-xs font-semibold"
           title="Reset All Player Timers"
         >
           <Flame className="w-3.5 h-3.5 text-red-400" />
+          <span>Reset</span>
         </button>
 
         {/* Export / Backup JSON */}
@@ -184,6 +200,94 @@ export const MatchClock: React.FC<MatchClockProps> = ({
         >
           <Download className="w-3.5 h-3.5" />
         </button>
+      </div>
+
+      {/* Right on Smaller Screens: Hamburger Menu */}
+      <div className="sm:hidden relative shrink-0" ref={menuRef}>
+        <button
+          type="button"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          className={`relative p-1.5 rounded-lg border transition active:scale-90 ${
+            isMenuOpen
+              ? 'bg-blue-600 border-blue-500 text-white'
+              : 'bg-slate-800 hover:bg-slate-700 border-slate-700 text-slate-200'
+          }`}
+          title="Open Menu"
+          aria-label="Toggle menu"
+        >
+          {isMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+          {subCount > 0 && !isMenuOpen && (
+            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-slate-950" />
+          )}
+        </button>
+
+        {/* Dropdown Menu Popup */}
+        {isMenuOpen && (
+          <div className="absolute right-0 top-full mt-2 w-52 rounded-xl bg-slate-900 border border-slate-800 shadow-2xl p-1.5 z-50 text-white animate-fade-in divide-y divide-slate-800/60">
+            <div className="py-1 space-y-1">
+              {/* Timeline Option */}
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  onOpenTimeline();
+                }}
+                className="w-full flex items-center justify-between px-2.5 py-2 rounded-lg hover:bg-slate-800/80 text-left text-xs font-semibold text-slate-200 transition"
+              >
+                <div className="flex items-center gap-2">
+                  <History className="w-4 h-4 text-emerald-400" />
+                  <span>Substitution Timeline</span>
+                </div>
+                {subCount > 0 && (
+                  <span className="px-1.5 py-0.2 rounded-full bg-emerald-500 text-slate-950 font-bold text-[9px] font-mono">
+                    {subCount}
+                  </span>
+                )}
+              </button>
+
+              {/* Download / Backup Option */}
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  onOpenExportImport();
+                }}
+                className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg hover:bg-slate-800/80 text-left text-xs font-semibold text-slate-200 transition"
+              >
+                <Download className="w-4 h-4 text-blue-400" />
+                <span>Backup / Export (JSON)</span>
+              </button>
+            </div>
+
+            <div className="py-1 space-y-1">
+              {/* Reset Clock Option */}
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  onResetClock();
+                }}
+                className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg hover:bg-slate-800/80 text-left text-xs font-semibold text-slate-300 transition"
+              >
+                <RotateCcw className="w-4 h-4 text-slate-400" />
+                <span>Reset Match Clock (00:00)</span>
+              </button>
+
+              {/* Reset All Timers Warning Option */}
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  onRequestResetTimers();
+                }}
+                className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg hover:bg-red-950/60 text-left text-xs font-semibold text-red-300 transition"
+              >
+                <Flame className="w-4 h-4 text-red-400" />
+                <span>Reset All Timers (00:00)</span>
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </header>
   );
