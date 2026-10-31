@@ -24,8 +24,22 @@ export interface SubstitutionLog {
   id: string;
   timestamp: string;
   matchTimeSeconds: number;
-  playerIn: { id: string; name: string; number: string };
-  playerOut: { id: string; name: string; number: string };
+  period?: string;
+  playerIn: {
+    id: string;
+    name: string;
+    number: string;
+    position?: string;
+    color?: string;
+  };
+  playerOut: {
+    id: string;
+    name: string;
+    number: string;
+    position?: string;
+    color?: string;
+    playedSeconds?: number;
+  };
 }
 
 export interface TeamSettings {

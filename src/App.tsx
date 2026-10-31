@@ -24,6 +24,7 @@ import { RosterModal } from './components/RosterModal';
 import { ExportImportModal } from './components/ExportImportModal';
 import { PWAInstallButton } from './components/PWAInstallButton';
 import { OfflineIndicator } from './components/OfflineIndicator';
+import { SubTimelinePanel } from './components/SubTimelinePanel';
 import {
   Users,
   Timer,
@@ -50,6 +51,7 @@ export default function App() {
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
   const [isRosterModalOpen, setIsRosterModalOpen] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [isTimelineOpen, setIsTimelineOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [selectedFieldPlayer, setSelectedFieldPlayer] = useState<Player | null>(null);
 
@@ -240,11 +242,25 @@ export default function App() {
           };
 
           newLogs.push({
-            id: 'sub_' + Date.now() + Math.random(),
+            id: 'sub_' + Date.now() + Math.random().toString(36).substring(2, 6),
             timestamp,
             matchTimeSeconds: prev.matchClock.seconds,
-            playerIn: { id: subPlayer.id, name: subPlayer.name, number: subPlayer.number },
-            playerOut: { id: targetPlayer.id, name: targetPlayer.name, number: targetPlayer.number },
+            period: prev.matchClock.period,
+            playerIn: {
+              id: subPlayer.id,
+              name: subPlayer.name,
+              number: subPlayer.number,
+              position: subPlayer.position,
+              color: subPlayer.color,
+            },
+            playerOut: {
+              id: targetPlayer.id,
+              name: targetPlayer.name,
+              number: targetPlayer.number,
+              position: targetPlayer.position,
+              color: targetPlayer.color,
+              playedSeconds: targetPlayer.totalSeconds,
+            },
           });
         }
       });
@@ -258,6 +274,11 @@ export default function App() {
 
     const summary = stagedPairs.map((p) => `#${p.subPlayer.number} IN for #${p.targetPlayer.number}`).join(', ');
     setToastMessage(`⚡ Substitution Executed: ${summary}`);
+  };
+
+  const handleClearTimeline = () => {
+    setState((prev) => ({ ...prev, subLogs: [] }));
+    setToastMessage('Substitution timeline cleared');
   };
 
   // Cancel individual staged sub
@@ -499,6 +520,8 @@ export default function App() {
         onResetClock={handleResetClock}
         onRequestResetTimers={() => setIsResetModalOpen(true)}
         onOpenExportImport={() => setIsExportModalOpen(true)}
+        onOpenTimeline={() => setIsTimelineOpen(true)}
+        subCount={state.subLogs.length}
       />
 
       {/* Main Workspace: Split exactly between Top Half (Field) and Bottom Half (Bench) */}
@@ -583,19 +606,19 @@ export default function App() {
             })}
 
             {/* Field Status & Helper Overlay */}
-            <div className="absolute bottom-2 left-2 flex items-center gap-1.5 pointer-events-none">
-              <span className="px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-xs text-[10px] font-bold text-white border border-white/20">
-                On Field: {onFieldPlayers.length}
+            <div className="absolute bottom-1.5 left-1.5 flex items-center gap-1 pointer-events-none">
+              <span className="px-1.5 py-0.2 rounded-full bg-black/60 backdrop-blur-xs text-[9px] font-bold text-white border border-white/20">
+                Field: {onFieldPlayers.length}
               </span>
               {stagedPairs.length > 0 && (
-                <span className="px-2 py-0.5 rounded-full bg-emerald-600/90 text-[10px] font-bold text-white shadow animate-pulse">
-                  {stagedPairs.length} Sub{stagedPairs.length > 1 ? 's' : ''} Staged
+                <span className="px-1.5 py-0.2 rounded-full bg-emerald-600/90 text-[9px] font-bold text-white shadow animate-pulse">
+                  {stagedPairs.length} Staged
                 </span>
               )}
             </div>
 
             {/* PWA Install Button Top Right of field */}
-            <div className="absolute top-2 right-2 pointer-events-auto z-10">
+            <div className="absolute top-1.5 right-1.5 pointer-events-auto z-10">
               <PWAInstallButton />
             </div>
           </FieldCanvas>
@@ -759,6 +782,14 @@ export default function App() {
         onClose={() => setIsExportModalOpen(false)}
         currentState={state}
         onImportState={(newState) => setState(newState)}
+      />
+
+      {/* Substitution Timeline Visual Log Panel */}
+      <SubTimelinePanel
+        isOpen={isTimelineOpen}
+        onClose={() => setIsTimelineOpen(false)}
+        logs={state.subLogs}
+        onClearLogs={handleClearTimeline}
       />
 
       {/* Offline Status Indicator */}

@@ -308,15 +308,15 @@ export const FieldCanvas: React.FC<FieldCanvasProps> = ({ sport, goalSide, child
 
       {/* Goal Direction Subtle Badge / Visual Helper */}
       <div
-        className={`absolute top-2 ${isLeft ? 'left-2' : 'right-2'} pointer-events-none px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-black/40 text-white/80 backdrop-blur-xs border border-white/20`}
+        className={`absolute top-1.5 ${isLeft ? 'left-1.5' : 'right-1.5'} pointer-events-none px-1.5 py-0.2 rounded text-[9px] font-bold uppercase tracking-wider bg-black/50 text-white/80 backdrop-blur-xs border border-white/20`}
       >
         {isLeft ? '← Goal' : 'Goal →'}
       </div>
 
       <div
-        className={`absolute top-2 ${isLeft ? 'right-2' : 'left-2'} pointer-events-none px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-black/40 text-white/80 backdrop-blur-xs border border-white/20`}
+        className={`absolute top-1.5 ${isLeft ? 'right-1.5' : 'left-1.5'} pointer-events-none px-1.5 py-0.2 rounded text-[9px] font-bold uppercase tracking-wider bg-black/50 text-white/80 backdrop-blur-xs border border-white/20`}
       >
-        Halfway Line
+        Halfway
       </div>
 
       {/* Interactive layer on top for player tokens & drag target */}
