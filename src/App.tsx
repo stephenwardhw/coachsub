@@ -912,7 +912,7 @@ export default function App() {
 
       {/* Floating Action Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-14 left-1/2 transform -translate-x-1/2 z-50 bg-slate-900/95 border border-slate-700 text-white text-xs sm:text-sm font-semibold px-4 py-2 rounded-xl shadow-2xl flex items-center gap-2 backdrop-blur-md animate-fade-in">
+        <div className="fixed top-14 left-1/2 z-50 bg-slate-900/95 border border-slate-700 text-white text-xs sm:text-sm font-semibold px-4 py-2 rounded-xl shadow-2xl flex items-center gap-2 backdrop-blur-md animate-toast">
           <Sparkles className="w-4 h-4 text-emerald-400 shrink-0" />
           <span>{toastMessage}</span>
         </div>
