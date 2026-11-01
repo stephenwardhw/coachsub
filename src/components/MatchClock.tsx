@@ -110,7 +110,7 @@ export const MatchClock: React.FC<MatchClockProps> = ({
   const menuRef = useRef<HTMLDivElement>(null);
 
   const periods = PERIOD_OPTIONS[sport] || PERIOD_OPTIONS.soccer;
-  const currentFlag = SUPPORTED_LANGUAGES.find((l) => l.code === language)?.flag || '🇺🇸';
+  const currentFlag = SUPPORTED_LANGUAGES.find((l) => l.code === language)?.flag || '🇨🇦';
 
   // Close menu when clicking outside
   useEffect(() => {
