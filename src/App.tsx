@@ -3,6 +3,7 @@ import {
   AppState,
   FieldPosition,
   GoalSide,
+  Language,
   Player,
   SportType,
   SubstitutionLog,
@@ -14,6 +15,7 @@ import {
   getPresetRosterForSport,
 } from './utils/storage';
 import { sounds } from './utils/audio';
+import { t } from './utils/i18n';
 import { FieldCanvas } from './components/FieldCanvas';
 import { PlayerToken } from './components/PlayerToken';
 import { BenchTray } from './components/BenchTray';
@@ -26,6 +28,7 @@ import { PWAInstallButton } from './components/PWAInstallButton';
 import { OfflineIndicator } from './components/OfflineIndicator';
 import { SubTimelinePanel } from './components/SubTimelinePanel';
 import { PrintableReportModal } from './components/PrintableReportModal';
+import { SettingsModal } from './components/SettingsModal';
 import { useAppUpdate } from './hooks/useAppUpdate';
 import {
   Users,
@@ -55,8 +58,11 @@ export default function App() {
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [isTimelineOpen, setIsTimelineOpen] = useState(false);
   const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [selectedFieldPlayer, setSelectedFieldPlayer] = useState<Player | null>(null);
+
+  const currentLanguage: Language = state.settings.language || 'en';
 
   const {
     isUpdateAvailable,
@@ -114,16 +120,42 @@ export default function App() {
     return () => clearInterval(interval);
   }, [state.matchClock.isRunning]);
 
-  // Sport change
-  const handleChangeSport = (newSport: SportType) => {
+  // Language change
+  const handleUpdateLanguage = (newLang: Language) => {
     setState((prev) => ({
       ...prev,
       settings: {
         ...prev.settings,
-        sport: newSport,
+        language: newLang,
       },
     }));
-    setToastMessage(`Switched field to ${newSport.toUpperCase()}`);
+  };
+
+  // Sport change (with optional roster preset load)
+  const handleUpdateSport = (newSport: SportType, loadPreset: boolean) => {
+    setState((prev) => {
+      const newPlayers = loadPreset ? getPresetRosterForSport(newSport) : prev.players;
+      return {
+        ...prev,
+        settings: {
+          ...prev.settings,
+          sport: newSport,
+        },
+        players: newPlayers,
+      };
+    });
+    setToastMessage(`${t('sport_select_prompt', currentLanguage)}: ${newSport.toUpperCase()}`);
+  };
+
+  // Sound toggle
+  const handleToggleSound = (enabled: boolean) => {
+    setState((prev) => ({
+      ...prev,
+      settings: {
+        ...prev.settings,
+        soundEnabled: enabled,
+      },
+    }));
   };
 
   // Flip field horizontally
@@ -222,7 +254,9 @@ export default function App() {
   const handleExecuteSubstitutions = () => {
     if (stagedPairs.length === 0) return;
 
-    sounds.playWhistle();
+    if (state.settings.soundEnabled !== false) {
+      sounds.playWhistle();
+    }
 
     const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const newLogs: SubstitutionLog[] = [];
@@ -519,8 +553,10 @@ export default function App() {
     <div className="flex flex-col h-screen w-screen bg-slate-950 text-white select-none overflow-hidden font-sans">
       {/* Top Header & Match Clock Controls */}
       <MatchClock
+        language={currentLanguage}
+        onOpenSettings={() => setIsSettingsModalOpen(true)}
+        onOpenRoster={() => setIsRosterModalOpen(true)}
         sport={state.settings.sport}
-        onChangeSport={handleChangeSport}
         goalSide={state.settings.goalSide}
         onFlipField={handleFlipField}
         clockSeconds={state.matchClock.seconds}
@@ -539,6 +575,7 @@ export default function App() {
         updateStatus={updateStatus}
         onCheckForUpdates={checkForUpdates}
         onForceUpdate={forceUpdate}
+        teamName={state.settings.teamName}
       />
 
       {/* Main Workspace: Split exactly between Top Half (Field) and Bottom Half (Bench) */}
@@ -548,7 +585,11 @@ export default function App() {
           ref={fieldRef}
           className="relative h-1/2 w-full bg-slate-900 border-b-2 border-slate-800 overflow-hidden touch-none"
         >
-          <FieldCanvas sport={state.settings.sport} goalSide={state.settings.goalSide}>
+          <FieldCanvas
+            sport={state.settings.sport}
+            goalSide={state.settings.goalSide}
+            language={currentLanguage}
+          >
             {/* On-field active players */}
             {onFieldPlayers.map((player) => {
               if (!player.fieldPosition) return null;
@@ -647,6 +688,7 @@ export default function App() {
           onExecute={handleExecuteSubstitutions}
           onCancelSub={handleCancelSub}
           onCancelAll={handleCancelAllSubs}
+          language={currentLanguage}
         />
 
         {/* BOTTOM HALF: Bench Tray of Available Players (50% of available height) */}
@@ -657,6 +699,7 @@ export default function App() {
             onStartDrag={handleStartDrag}
             onOpenRosterModal={() => setIsRosterModalOpen(true)}
             onQuickAddPlayer={() => setIsRosterModalOpen(true)}
+            language={currentLanguage}
             onBenchPlayerClick={(player) => {
               // Quick tap helper: if a field player is selected, stage sub!
               if (selectedFieldPlayer) {
@@ -728,13 +771,13 @@ export default function App() {
                 <div>
                   <h4 className="font-bold text-sm">{selectedFieldPlayer.name}</h4>
                   <div className="text-xs text-emerald-400 font-mono">
-                    Time: {formatSeconds(selectedFieldPlayer.totalSeconds)}
+                    {t('player_time', currentLanguage)}: {formatSeconds(selectedFieldPlayer.totalSeconds)}
                   </div>
                 </div>
               </div>
               <button
                 onClick={() => setSelectedFieldPlayer(null)}
-                className="text-slate-400 hover:text-white p-1"
+                className="text-slate-400 hover:text-white p-1 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -754,23 +797,23 @@ export default function App() {
                   }));
                   setSelectedFieldPlayer(null);
                   sounds.playDrop();
-                  setToastMessage(`#${selectedFieldPlayer.number} moved to bench`);
+                  setToastMessage(`#${selectedFieldPlayer.number} ${t('move_to_bench', currentLanguage)}`);
                 }}
-                className="w-full py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 flex items-center justify-center gap-2 transition"
+                className="w-full py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 flex items-center justify-center gap-2 transition cursor-pointer"
               >
                 <Users className="w-4 h-4 text-amber-400" />
-                <span>Move to Bench</span>
+                <span>{t('move_to_bench', currentLanguage)}</span>
               </button>
 
               <button
                 onClick={() => {
                   setSelectedFieldPlayer(null);
-                  setToastMessage('Tap a player on the bench to stage substitution');
+                  setToastMessage(t('drag_or_tap_hint', currentLanguage));
                 }}
-                className="w-full py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white flex items-center justify-center gap-2 transition"
+                className="w-full py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white flex items-center justify-center gap-2 transition cursor-pointer"
               >
                 <ArrowRightLeft className="w-4 h-4" />
-                <span>Choose Sub from Bench...</span>
+                <span>{t('choose_sub_from_bench', currentLanguage)}</span>
               </button>
             </div>
           </div>
@@ -782,6 +825,7 @@ export default function App() {
         isOpen={isResetModalOpen}
         onClose={() => setIsResetModalOpen(false)}
         onConfirm={handleConfirmResetAllTimers}
+        language={currentLanguage}
       />
 
       {/* Roster Management Modal */}
@@ -798,6 +842,7 @@ export default function App() {
             settings: { ...prev.settings, teamName },
           }))
         }
+        language={currentLanguage}
       />
 
       {/* Backup & Transfer (JSON) Modal */}
@@ -814,6 +859,7 @@ export default function App() {
         onClose={() => setIsTimelineOpen(false)}
         logs={state.subLogs}
         onClearLogs={handleClearTimeline}
+        language={currentLanguage}
       />
 
       {/* Printable PDF Match Sheet & Substitution Log Modal */}
@@ -823,21 +869,40 @@ export default function App() {
         state={state}
       />
 
+      {/* Settings & Sport Management Modal */}
+      <SettingsModal
+        isOpen={isSettingsModalOpen}
+        onClose={() => setIsSettingsModalOpen(false)}
+        language={currentLanguage}
+        onUpdateLanguage={handleUpdateLanguage}
+        currentSport={state.settings.sport}
+        onUpdateSport={handleUpdateSport}
+        goalSide={state.settings.goalSide}
+        onUpdateGoalSide={(side) => {
+          if (side !== state.settings.goalSide) {
+            handleFlipField();
+          }
+        }}
+        soundEnabled={state.settings.soundEnabled !== false}
+        onToggleSound={handleToggleSound}
+        teamName={state.settings.teamName}
+      />
+
       {/* App Update Ready Banner */}
       {isUpdateAvailable && (
         <aside
-          aria-label="Application update available"
+          aria-label={t('update_ready', currentLanguage)}
           className="fixed bottom-3 right-3 z-50 max-w-sm bg-gradient-to-r from-emerald-600 to-teal-600 text-white p-3 rounded-2xl shadow-2xl border border-emerald-400/40 flex items-center gap-3"
         >
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-black tracking-wide uppercase">App Update Ready</p>
-            <p className="text-[11px] text-emerald-100 truncate">A new version of CoachSub is available</p>
+            <p className="text-xs font-black tracking-wide uppercase">{t('update_ready', currentLanguage)}</p>
+            <p className="text-[11px] text-emerald-100 truncate">{t('update_desc', currentLanguage)}</p>
           </div>
           <button
             onClick={() => forceUpdate()}
             className="px-3 py-1.5 rounded-xl bg-white text-emerald-800 text-xs font-black shadow hover:bg-emerald-50 active:scale-95 transition shrink-0 cursor-pointer"
           >
-            Update Now
+            {t('update_now', currentLanguage)}
           </button>
         </aside>
       )}

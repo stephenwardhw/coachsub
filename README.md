@@ -18,6 +18,7 @@ Designed specifically for sideline use on phones and tablets in bright sunlight,
    - [Official Match Sheet & Printable PDF Export](#6-official-match-sheet--printable-pdf-export)
    - [Roster & Team Management](#7-roster--team-management)
    - [Backup & Transfer (JSON)](#8-backup--transfer-json)
+   - [Settings, Multi-Language & Sport Selection](#9-settings-multi-language--sport-selection)
 4. [Mobile Installation (PWA)](#mobile-installation-pwa)
 5. [In-App Updates & Forced Update Mechanism](#in-app-updates--forced-update-mechanism)
 6. [Local Development](#local-development)
@@ -52,6 +53,7 @@ CoachSub includes authentic half-pitch vector markings, standard period breakdow
 - **Mobile Hamburger Menu**: On small screens, secondary tools (Timeline, Reset Timers, Roster, Backup/Transfer, PDF Match Sheet, and Update Detector) tuck away into a responsive navigation drawer.
 - **Printable PDF Match Report**: Generate an official match report with team name, match date, final match time, starter lineup table with minutes played, and a complete chronological substitution log. Trigger native browser print or download a self-contained HTML report.
 - **PWA Update Notification & Force Update**: Automatically detects when a new release is deployed on your web server and notifies the coach with a floating banner and in the menu. One tap triggers `SKIP_WAITING` and reloads into the new version instantly without losing local roster data.
+- **Dedicated Settings & Multi-Language Support**: Complete translations for **English (🇺🇸)**, **French (🇫🇷 Français)**, **Spanish (🇪🇸 Español)**, and **Chinese (🇨🇳 中文 简体)**. The Settings page houses language selection, pitch sport selector, goal orientation, and sound effects.
 - **Zero-Cloud Offline Persistence**: State is stored in HTML5 `localStorage`. All timers, rosters, positions, and substitution histories survive accidental browser closure or app restarts.
 
 ---
@@ -124,6 +126,22 @@ Tap the **Roster (Users icon)** button:
 Tap **"Backup / Transfer"** in the menu:
 - Export your entire roster, field positions, match clocks, and substitution logs as a single `.json` file.
 - Import a previously saved `.json` file on another coach's phone or tablet to synchronize lineups instantly.
+
+### 9. Settings, Multi-Language & Sport Selection
+Tap the **Settings (Gear icon)** in the header or hamburger menu:
+- **Language Selector**: Instantly switch the user interface between:
+  - 🇺🇸 **English**
+  - 🇫🇷 **Français** (French)
+  - 🇪🇸 **Español** (Spanish)
+  - 🇨🇳 **中文 (简体)** (Chinese)
+  All match clocks, period names, roster managers, pitch helpers, timelines, and printable official match sheets reflect the chosen language immediately.
+- **Sport Switcher (Moved to Settings)**:
+  - Select between **Soccer (Football)**, **Ice Hockey**, **Lacrosse**, **Field Hockey**, and **Rugby**.
+  - Choose to keep your current player list or load the authentic starter preset for the newly chosen sport.
+  - Moving the sport switcher into Settings streamlines the top match header bar for distraction-free game tracking on small phone screens.
+- **Goal Side Orientation**: Toggle defending/attacking direction (Goal Left vs Goal Right).
+- **Audio Whistle Toggle**: Enable or mute the referee whistle audio confirmation when executing substitutions.
+- **App & PWA Info**: View installed app version and offline cache availability.
 
 ---
 

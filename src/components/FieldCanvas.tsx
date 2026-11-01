@@ -1,13 +1,15 @@
 import React from 'react';
-import { GoalSide, SportType } from '../types';
+import { GoalSide, Language, SportType } from '../types';
+import { t } from '../utils/i18n';
 
 interface FieldCanvasProps {
   sport: SportType;
   goalSide: GoalSide;
   children?: React.ReactNode;
+  language?: Language;
 }
 
-export const FieldCanvas: React.FC<FieldCanvasProps> = ({ sport, goalSide, children }) => {
+export const FieldCanvas: React.FC<FieldCanvasProps> = ({ sport, goalSide, children, language = 'en' }) => {
   // We define the half field on a coordinate system of 1000 x 600
   // If goalSide is 'left', goal is at x=0, half-line is at x=1000.
   // If goalSide is 'right', goal is at x=1000, half-line is at x=0.
@@ -406,13 +408,13 @@ export const FieldCanvas: React.FC<FieldCanvasProps> = ({ sport, goalSide, child
       <div
         className={`absolute top-1.5 ${isLeft ? 'left-1.5' : 'right-1.5'} pointer-events-none px-1.5 py-0.2 rounded text-[9px] font-bold uppercase tracking-wider bg-black/50 text-white/80 backdrop-blur-xs border border-white/20`}
       >
-        {isLeft ? '← Goal' : 'Goal →'}
+        {isLeft ? `← ${t('goal', language)}` : `${t('goal', language)} →`}
       </div>
 
       <div
         className={`absolute top-1.5 ${isLeft ? 'right-1.5' : 'left-1.5'} pointer-events-none px-1.5 py-0.2 rounded text-[9px] font-bold uppercase tracking-wider bg-black/50 text-white/80 backdrop-blur-xs border border-white/20`}
       >
-        Halfway
+        {t('halfway', language)}
       </div>
 
       {/* Interactive layer on top for player tokens & drag target */}

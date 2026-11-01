@@ -1,7 +1,8 @@
 import React, { useRef } from 'react';
-import { AppState } from '../types';
+import { AppState, Language } from '../types';
 import { formatSeconds } from '../utils/storage';
-import { Printer, Download, X, FileText, ArrowRight, Shield, CheckCircle2 } from 'lucide-react';
+import { t } from '../utils/i18n';
+import { Printer, Download, X, FileText, Shield } from 'lucide-react';
 
 interface PrintableReportModalProps {
   isOpen: boolean;
@@ -18,6 +19,7 @@ export const PrintableReportModal: React.FC<PrintableReportModalProps> = ({
 
   if (!isOpen) return null;
 
+  const language: Language = state.settings.language || 'en';
   const onFieldPlayers = state.players.filter((p) => p.isOnField && !p.subStagedForPlayerId);
   const benchPlayers = state.players.filter((p) => !p.isOnField && !p.subStagedForPlayerId);
   const dateStr = new Date().toLocaleDateString(undefined, {
@@ -79,8 +81,8 @@ export const PrintableReportModal: React.FC<PrintableReportModalProps> = ({
               <FileText className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base sm:text-lg font-bold">Printable Lineup & Substitution Report</h2>
-              <p className="text-xs text-slate-400">Save as PDF or print official match sheet</p>
+              <h2 className="text-base sm:text-lg font-bold">{t('match_report_title', language)}</h2>
+              <p className="text-xs text-slate-400">{t('print_or_save_pdf', language)}</p>
             </div>
           </div>
 
@@ -88,35 +90,36 @@ export const PrintableReportModal: React.FC<PrintableReportModalProps> = ({
             <button
               type="button"
               onClick={handlePrint}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 active:scale-95 text-xs font-bold text-white shadow-md transition"
-              title="Print or Save as PDF"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 active:scale-95 text-xs font-bold text-white shadow-md transition cursor-pointer"
+              title={t('print_or_save_pdf', language)}
             >
               <Printer className="w-4 h-4" />
-              <span>Print / Save PDF</span>
+              <span>{t('print_or_save_pdf', language)}</span>
             </button>
 
             <button
               type="button"
               onClick={handleDownloadHtml}
-              className="p-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition"
-              title="Download Report File"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-xs font-semibold text-slate-200 border border-slate-700 transition cursor-pointer hidden sm:flex"
+              title={t('download_html', language)}
             >
-              <Download className="w-4 h-4" />
+              <Download className="w-4 h-4 text-emerald-400" />
+              <span>HTML</span>
             </button>
 
             <button
               type="button"
               onClick={onClose}
-              className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition"
+              className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition cursor-pointer"
+              aria-label="Close"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
         </div>
 
-        {/* Printable Document Container */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-950 text-slate-900 print:p-0 print:m-0 print:bg-white print:text-black">
-          {/* Printable Sheet */}
+        {/* Printable Paper Canvas */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-950/40 print:p-0 print:bg-white touch-pan-y">
           <div
             ref={reportRef}
             className="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-6 sm:p-8 space-y-6 text-slate-800 print:shadow-none print:p-0 print:max-w-none"
@@ -127,12 +130,12 @@ export const PrintableReportModal: React.FC<PrintableReportModalProps> = ({
                 <div className="flex items-center gap-2">
                   <Shield className="w-6 h-6 text-blue-700 print:text-black" />
                   <h1 className="text-2xl font-black tracking-tight text-slate-950">
-                    {state.settings.teamName || 'Team Lineup & Sub Report'}
+                    {state.settings.teamName || 'CoachSub'}
                   </h1>
                 </div>
                 <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-slate-600 font-medium">
                   <span className="uppercase font-bold tracking-wider text-blue-700 print:text-black">
-                    Sport: {state.settings.sport.toUpperCase()}
+                    {state.settings.sport.toUpperCase()}
                   </span>
                   <span>•</span>
                   <span>{dateStr} ({timeStr})</span>
@@ -140,7 +143,7 @@ export const PrintableReportModal: React.FC<PrintableReportModalProps> = ({
               </div>
 
               <div className="text-right">
-                <div className="text-xs uppercase font-bold text-slate-500">Match Clock</div>
+                <div className="text-xs uppercase font-bold text-slate-500">{t('matchClock', language)}</div>
                 <div className="font-mono text-xl font-black text-slate-950">
                   {formatSeconds(state.matchClock.seconds)}
                 </div>
@@ -153,31 +156,31 @@ export const PrintableReportModal: React.FC<PrintableReportModalProps> = ({
             {/* Quick Metrics */}
             <div className="grid grid-cols-3 gap-3">
               <div className="p-3 rounded-lg bg-slate-50 border border-slate-200">
-                <div className="text-[11px] font-bold text-slate-500 uppercase">On Pitch</div>
-                <div className="text-xl font-black text-slate-900">{onFieldPlayers.length} Players</div>
+                <div className="text-[11px] font-bold text-slate-500 uppercase">{t('field', language)}</div>
+                <div className="text-xl font-black text-slate-900">{onFieldPlayers.length}</div>
               </div>
               <div className="p-3 rounded-lg bg-slate-50 border border-slate-200">
-                <div className="text-[11px] font-bold text-slate-500 uppercase">Bench / Subs</div>
-                <div className="text-xl font-black text-slate-900">{benchPlayers.length} Players</div>
+                <div className="text-[11px] font-bold text-slate-500 uppercase">{t('bench', language)}</div>
+                <div className="text-xl font-black text-slate-900">{benchPlayers.length}</div>
               </div>
               <div className="p-3 rounded-lg bg-slate-50 border border-slate-200">
-                <div className="text-[11px] font-bold text-slate-500 uppercase">Substitutions</div>
-                <div className="text-xl font-black text-slate-900">{state.subLogs.length} Swaps</div>
+                <div className="text-[11px] font-bold text-slate-500 uppercase">{t('timeline', language)}</div>
+                <div className="text-xl font-black text-slate-900">{state.subLogs.length}</div>
               </div>
             </div>
 
             {/* Section 1: Active Lineup on Field */}
             <div>
               <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900 border-b border-slate-300 pb-1 mb-2">
-                Active Lineup on Pitch ({onFieldPlayers.length})
+                {t('starting_lineup', language)} ({onFieldPlayers.length})
               </h3>
               <table className="w-full text-left text-xs border border-slate-200">
                 <thead>
                   <tr className="bg-slate-100 text-slate-700 font-bold">
                     <th className="py-2 px-3 border border-slate-200 w-12 text-center">#</th>
-                    <th className="py-2 px-3 border border-slate-200">Player Name</th>
-                    <th className="py-2 px-3 border border-slate-200 w-20 text-center">Position</th>
-                    <th className="py-2 px-3 border border-slate-200 w-28 text-right">Time Played</th>
+                    <th className="py-2 px-3 border border-slate-200">{t('player_name', language)}</th>
+                    <th className="py-2 px-3 border border-slate-200 w-20 text-center">{t('position', language)}</th>
+                    <th className="py-2 px-3 border border-slate-200 w-28 text-right">{t('player_time', language)}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -204,15 +207,15 @@ export const PrintableReportModal: React.FC<PrintableReportModalProps> = ({
             {/* Section 2: Bench & Substitutes */}
             <div>
               <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900 border-b border-slate-300 pb-1 mb-2">
-                Bench & Available Roster ({benchPlayers.length})
+                {t('bench_reserves', language)} ({benchPlayers.length})
               </h3>
               <table className="w-full text-left text-xs border border-slate-200">
                 <thead>
                   <tr className="bg-slate-100 text-slate-700 font-bold">
                     <th className="py-2 px-3 border border-slate-200 w-12 text-center">#</th>
-                    <th className="py-2 px-3 border border-slate-200">Player Name</th>
-                    <th className="py-2 px-3 border border-slate-200 w-20 text-center">Position</th>
-                    <th className="py-2 px-3 border border-slate-200 w-28 text-right">Time Played</th>
+                    <th className="py-2 px-3 border border-slate-200">{t('player_name', language)}</th>
+                    <th className="py-2 px-3 border border-slate-200 w-20 text-center">{t('position', language)}</th>
+                    <th className="py-2 px-3 border border-slate-200 w-28 text-right">{t('player_time', language)}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -239,21 +242,21 @@ export const PrintableReportModal: React.FC<PrintableReportModalProps> = ({
             {/* Section 3: Chronological Substitution Timeline */}
             <div>
               <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900 border-b border-slate-300 pb-1 mb-2">
-                Substitution Log Timeline ({state.subLogs.length} Swaps Recorded)
+                {t('substitution_history', language)} ({state.subLogs.length})
               </h3>
               {state.subLogs.length === 0 ? (
                 <div className="p-4 text-center text-xs text-slate-500 border border-dashed border-slate-300 rounded">
-                  No substitutions were made during this match session.
+                  {t('no_subs_yet', language)}
                 </div>
               ) : (
                 <table className="w-full text-left text-xs border border-slate-200">
                   <thead>
                     <tr className="bg-slate-100 text-slate-700 font-bold">
                       <th className="py-2 px-2 border border-slate-200 w-8 text-center">#</th>
-                      <th className="py-2 px-2.5 border border-slate-200 w-24">Match Clock</th>
-                      <th className="py-2 px-3 border border-slate-200">Player IN</th>
-                      <th className="py-2 px-3 border border-slate-200">Player OUT</th>
-                      <th className="py-2 px-3 border border-slate-200 text-right w-24">Shift Time</th>
+                      <th className="py-2 px-2.5 border border-slate-200 w-24">{t('match_time', language)}</th>
+                      <th className="py-2 px-3 border border-slate-200">{t('in', language)}</th>
+                      <th className="py-2 px-3 border border-slate-200">{t('out', language)}</th>
+                      <th className="py-2 px-3 border border-slate-200 text-right w-24">{t('player_time', language)}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -302,7 +305,7 @@ export const PrintableReportModal: React.FC<PrintableReportModalProps> = ({
               </div>
               <div>
                 <div className="border-b border-slate-400 pb-1 mb-1">Official / League Referee</div>
-                <div className="text-[10px] text-slate-400">Match Scorer / Official Sign-off</div>
+                <div className="text-[10px] text-slate-400">Match Scorer / Sign-off</div>
               </div>
             </div>
           </div>

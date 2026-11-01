@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Player } from '../types';
+import { Language, Player } from '../types';
 import { PlayerToken } from './PlayerToken';
 import { ArrowUpDown, Users, UserPlus, SlidersHorizontal } from 'lucide-react';
+import { t } from '../utils/i18n';
 
 interface BenchTrayProps {
   benchPlayers: Player[];
@@ -10,6 +11,7 @@ interface BenchTrayProps {
   onOpenRosterModal: () => void;
   onQuickAddPlayer: () => void;
   onBenchPlayerClick?: (player: Player) => void;
+  language?: Language;
 }
 
 type SortOption = 'timeAsc' | 'timeDesc' | 'number' | 'name';
@@ -21,6 +23,7 @@ export const BenchTray: React.FC<BenchTrayProps> = ({
   onOpenRosterModal,
   onQuickAddPlayer,
   onBenchPlayerClick,
+  language = 'en',
 }) => {
   const [sortBy, setSortBy] = useState<SortOption>('timeAsc'); // least played first is great for coaches
   const [search, setSearch] = useState('');
@@ -54,7 +57,7 @@ export const BenchTray: React.FC<BenchTrayProps> = ({
         <div className="flex items-center gap-1.5">
           <div className="flex items-center gap-1 text-[11px] font-bold text-slate-300">
             <Users className="w-3.5 h-3.5 text-blue-400" />
-            <span className="uppercase">Bench</span>
+            <span className="uppercase">{t('bench', language)}</span>
             <span className="px-1.5 py-0.2 rounded-full bg-blue-500/20 text-blue-400 text-[10px] font-mono font-bold">
               {benchPlayers.length}
             </span>
@@ -83,22 +86,22 @@ export const BenchTray: React.FC<BenchTrayProps> = ({
           <button
             type="button"
             onClick={onQuickAddPlayer}
-            className="flex items-center gap-1 px-1.5 py-1 rounded bg-blue-600 hover:bg-blue-500 active:scale-95 text-white text-[10px] font-semibold transition"
-            title="Add a new player"
+            className="flex items-center gap-1 px-1.5 py-1 rounded bg-blue-600 hover:bg-blue-500 active:scale-95 text-white text-[10px] font-semibold transition cursor-pointer"
+            title={t('add_player', language)}
           >
             <UserPlus className="w-3 h-3" />
-            <span className="hidden xs:inline">Add</span>
+            <span className="hidden xs:inline">{t('add_player', language)}</span>
           </button>
 
           {/* Roster Manager */}
           <button
             type="button"
             onClick={onOpenRosterModal}
-            className="flex items-center gap-1 px-1.5 py-1 rounded bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-300 text-[10px] font-semibold border border-slate-700 transition"
-            title="Manage Team Roster"
+            className="flex items-center gap-1 px-1.5 py-1 rounded bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-300 text-[10px] font-semibold border border-slate-700 transition cursor-pointer"
+            title={t('roster_title', language)}
           >
             <SlidersHorizontal className="w-3 h-3" />
-            <span className="hidden xs:inline">Roster</span>
+            <span className="hidden xs:inline">{t('roster', language)}</span>
           </button>
         </div>
       </div>
@@ -108,12 +111,12 @@ export const BenchTray: React.FC<BenchTrayProps> = ({
         {sorted.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-center p-3 text-slate-500">
             <Users className="w-6 h-6 mb-1 opacity-40" />
-            <p className="text-xs font-medium text-slate-400">All players are currently on the field</p>
+            <p className="text-xs font-medium text-slate-400">{t('empty_bench', language)}</p>
             <button
               onClick={onQuickAddPlayer}
-              className="mt-1 text-xs text-blue-400 underline hover:text-blue-300"
+              className="mt-1 text-xs text-blue-400 underline hover:text-blue-300 cursor-pointer"
             >
-              + Add player to bench
+              + {t('add_player', language)}
             </button>
           </div>
         ) : (
@@ -149,7 +152,7 @@ export const BenchTray: React.FC<BenchTrayProps> = ({
                   {isStaged && (
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                       <span className="bg-emerald-600/90 text-white text-[8px] font-bold px-1 py-0.2 rounded shadow">
-                        STAGED
+                        {t('staged', language).toUpperCase()}
                       </span>
                     </div>
                   )}
@@ -162,7 +165,7 @@ export const BenchTray: React.FC<BenchTrayProps> = ({
 
       {/* Ultra-compact instruction footer */}
       <div className="px-2 py-0.5 bg-slate-950/80 border-t border-slate-800/60 text-[9px] text-slate-400 flex items-center justify-between shrink-0">
-        <span className="truncate">💡 Drag onto pitch or drop over active player to sub</span>
+        <span className="truncate">💡 {t('drag_or_tap_hint', language)}</span>
         <span className="text-slate-500 font-mono text-[8px] hidden xs:inline shrink-0 ml-1">Live Timers</span>
       </div>
     </div>

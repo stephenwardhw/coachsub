@@ -115,6 +115,8 @@ export function getDefaultState(): AppState {
       goalSide: 'left',
       playersPerSide: 11,
       autoTickWithGameClock: true,
+      language: 'en',
+      soundEnabled: true,
     },
     players: DEFAULT_SOCCER_ROSTER,
     matchClock: {

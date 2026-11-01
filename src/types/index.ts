@@ -42,12 +42,16 @@ export interface SubstitutionLog {
   };
 }
 
+export type Language = 'en' | 'fr' | 'es' | 'zh';
+
 export interface TeamSettings {
   teamName: string;
   sport: SportType;
   goalSide: GoalSide;
   playersPerSide: number;
   autoTickWithGameClock: boolean;
+  language?: Language;
+  soundEnabled?: boolean;
 }
 
 export interface AppState {

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Player, SportType } from '../types';
+import { Language, Player, SportType } from '../types';
 import { formatSeconds, getPresetRosterForSport } from '../utils/storage';
+import { t } from '../utils/i18n';
 import {
   Users,
   UserPlus,
@@ -22,6 +23,7 @@ interface RosterModalProps {
   sport: SportType;
   teamName: string;
   onUpdateTeamName: (teamName: string) => void;
+  language?: Language;
 }
 
 const COLOR_OPTIONS = [
@@ -43,9 +45,11 @@ export const RosterModal: React.FC<RosterModalProps> = ({
   sport,
   teamName,
   onUpdateTeamName,
+  language = 'en',
 }) => {
   const [currentTeamName, setCurrentTeamName] = useState(teamName);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [confirmPreset, setConfirmPreset] = useState(false);
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
   const [newPosition, setNewPosition] = useState('');
@@ -107,20 +111,13 @@ export const RosterModal: React.FC<RosterModalProps> = ({
   };
 
   const deletePlayer = (id: string) => {
-    if (confirm('Delete this player from roster?')) {
-      onUpdatePlayers(players.filter((p) => p.id !== id));
-    }
+    onUpdatePlayers(players.filter((p) => p.id !== id));
   };
 
   const handleLoadSportPreset = () => {
-    if (
-      confirm(
-        `Load default starter roster for ${sport}? This will replace your current lineup.`
-      )
-    ) {
-      const preset = getPresetRosterForSport(sport);
-      onUpdatePlayers(preset);
-    }
+    const preset = getPresetRosterForSport(sport);
+    onUpdatePlayers(preset);
+    setConfirmPreset(false);
   };
 
   const onFieldCount = players.filter((p) => p.isOnField).length;
@@ -135,15 +132,15 @@ export const RosterModal: React.FC<RosterModalProps> = ({
               <Users className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base sm:text-lg font-bold">Team Roster Management</h2>
+              <h2 className="text-base sm:text-lg font-bold">{t('roster_title', language)}</h2>
               <p className="text-xs text-slate-400">
-                {players.length} Players Total • {onFieldCount} On Pitch • {players.length - onFieldCount} on Bench
+                {players.length} {t('total_players', language)} • {onFieldCount} {t('field', language)} • {players.length - onFieldCount} {t('bench', language)}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition"
+            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -159,10 +156,10 @@ export const RosterModal: React.FC<RosterModalProps> = ({
               </div>
               <div>
                 <label htmlFor="teamNameInput" className="text-xs font-bold text-white block cursor-pointer">
-                  Team Name
+                  {t('team_name', language)}
                 </label>
                 <p className="text-[11px] text-slate-400">
-                  Displayed on match exports, backups, and reports
+                  {t('enter_team_name', language)}
                 </p>
               </div>
             </div>
@@ -189,13 +186,13 @@ export const RosterModal: React.FC<RosterModalProps> = ({
           >
             <div className="text-xs font-bold uppercase tracking-wider text-blue-400 flex items-center gap-1.5">
               <UserPlus className="w-4 h-4" />
-              <span>Add New Player</span>
+              <span>{t('add_player', language)}</span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
               <div className="sm:col-span-2">
                 <label className="block text-[11px] font-semibold text-slate-300 mb-1">
-                  Jersey #
+                  {t('jersey_num', language)}
                 </label>
                 <input
                   type="text"
@@ -210,7 +207,7 @@ export const RosterModal: React.FC<RosterModalProps> = ({
 
               <div className="sm:col-span-5">
                 <label className="block text-[11px] font-semibold text-slate-300 mb-1">
-                  Player Name
+                  {t('player_name', language)}
                 </label>
                 <input
                   type="text"
@@ -224,7 +221,7 @@ export const RosterModal: React.FC<RosterModalProps> = ({
 
               <div className="sm:col-span-2">
                 <label className="block text-[11px] font-semibold text-slate-300 mb-1">
-                  Position
+                  {t('position', language)}
                 </label>
                 <input
                   type="text"
@@ -239,17 +236,17 @@ export const RosterModal: React.FC<RosterModalProps> = ({
               <div className="sm:col-span-3 flex items-end">
                 <button
                   type="submit"
-                  className="w-full py-2 px-3 rounded-lg bg-blue-600 hover:bg-blue-500 active:bg-blue-700 font-bold text-sm text-white shadow-md shadow-blue-600/30 transition flex items-center justify-center gap-1.5"
+                  className="w-full py-2 px-3 rounded-lg bg-blue-600 hover:bg-blue-500 active:bg-blue-700 font-bold text-sm text-white shadow-md shadow-blue-600/30 transition flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <Plus className="w-4 h-4" />
-                  <span>Add Player</span>
+                  <span>{t('add_player', language)}</span>
                 </button>
               </div>
             </div>
 
             {/* Color picker pills */}
             <div className="flex items-center gap-2 pt-1">
-              <span className="text-[11px] text-slate-400">Jersey Color:</span>
+              <span className="text-[11px] text-slate-400">{t('color', language)}:</span>
               <div className="flex items-center gap-1.5">
                 {COLOR_OPTIONS.map((c) => (
                   <button
@@ -419,18 +416,18 @@ export const RosterModal: React.FC<RosterModalProps> = ({
           <button
             type="button"
             onClick={handleLoadSportPreset}
-            className="flex items-center gap-1.5 text-xs text-blue-400 hover:text-blue-300 font-medium"
+            className="flex items-center gap-1.5 text-xs text-blue-400 hover:text-blue-300 font-medium cursor-pointer"
           >
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Load Default {sport.toUpperCase()} Lineup</span>
+            <span>{t('load_preset', language)} ({sport.toUpperCase()})</span>
           </button>
 
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-sm font-bold text-white shadow-md transition"
+            className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-sm font-bold text-white shadow-md transition cursor-pointer"
           >
-            Done
+            {t('close', language)}
           </button>
         </div>
       </div>

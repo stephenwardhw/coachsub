@@ -1,6 +1,7 @@
 import React from 'react';
-import { Player } from '../types';
+import { Language, Player } from '../types';
 import { ArrowRight, CheckCheck, X } from 'lucide-react';
+import { t } from '../utils/i18n';
 
 interface StagedSubPair {
   subPlayer: Player;
@@ -12,6 +13,7 @@ interface StagedSubBarProps {
   onExecute: () => void;
   onCancelSub: (subPlayerId: string) => void;
   onCancelAll: () => void;
+  language?: Language;
 }
 
 export const StagedSubBar: React.FC<StagedSubBarProps> = ({
@@ -19,6 +21,7 @@ export const StagedSubBar: React.FC<StagedSubBarProps> = ({
   onExecute,
   onCancelSub,
   onCancelAll,
+  language = 'en',
 }) => {
   if (stagedPairs.length === 0) return null;
 
@@ -60,19 +63,19 @@ export const StagedSubBar: React.FC<StagedSubBarProps> = ({
         <button
           type="button"
           onClick={onCancelAll}
-          className="px-1.5 py-1 rounded bg-slate-800 text-[10px] text-slate-400 hover:text-white transition"
-          title="Cancel All Staged Subs"
+          className="px-1.5 py-1 rounded bg-slate-800 text-[10px] text-slate-400 hover:text-white transition cursor-pointer"
+          title={t('cancel_all', language)}
         >
-          Cancel
+          {t('cancel', language)}
         </button>
 
         <button
           type="button"
           onClick={onExecute}
-          className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-400 active:bg-emerald-600 text-slate-950 font-black text-xs shadow-md shadow-emerald-500/30 transition active:scale-95 animate-pulse"
+          className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-400 active:bg-emerald-600 text-slate-950 font-black text-xs shadow-md shadow-emerald-500/30 transition active:scale-95 animate-pulse cursor-pointer"
         >
           <CheckCheck className="w-3.5 h-3.5 stroke-[2.5]" />
-          <span>Execute ({stagedPairs.length})</span>
+          <span>{t('execute_subs', language)} ({stagedPairs.length})</span>
         </button>
       </div>
     </div>
