@@ -25,6 +25,8 @@ import { ExportImportModal } from './components/ExportImportModal';
 import { PWAInstallButton } from './components/PWAInstallButton';
 import { OfflineIndicator } from './components/OfflineIndicator';
 import { SubTimelinePanel } from './components/SubTimelinePanel';
+import { PrintableReportModal } from './components/PrintableReportModal';
+import { useAppUpdate } from './hooks/useAppUpdate';
 import {
   Users,
   Timer,
@@ -52,8 +54,17 @@ export default function App() {
   const [isRosterModalOpen, setIsRosterModalOpen] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [isTimelineOpen, setIsTimelineOpen] = useState(false);
+  const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [selectedFieldPlayer, setSelectedFieldPlayer] = useState<Player | null>(null);
+
+  const {
+    isUpdateAvailable,
+    isChecking: isCheckingUpdate,
+    updateStatus,
+    checkForUpdates,
+    forceUpdate,
+  } = useAppUpdate();
 
   const fieldRef = useRef<HTMLDivElement>(null);
 
@@ -521,7 +532,13 @@ export default function App() {
         onRequestResetTimers={() => setIsResetModalOpen(true)}
         onOpenExportImport={() => setIsExportModalOpen(true)}
         onOpenTimeline={() => setIsTimelineOpen(true)}
+        onOpenPrintModal={() => setIsPrintModalOpen(true)}
         subCount={state.subLogs.length}
+        isUpdateAvailable={isUpdateAvailable}
+        isCheckingUpdate={isCheckingUpdate}
+        updateStatus={updateStatus}
+        onCheckForUpdates={checkForUpdates}
+        onForceUpdate={forceUpdate}
       />
 
       {/* Main Workspace: Split exactly between Top Half (Field) and Bottom Half (Bench) */}
@@ -798,6 +815,32 @@ export default function App() {
         logs={state.subLogs}
         onClearLogs={handleClearTimeline}
       />
+
+      {/* Printable PDF Match Sheet & Substitution Log Modal */}
+      <PrintableReportModal
+        isOpen={isPrintModalOpen}
+        onClose={() => setIsPrintModalOpen(false)}
+        state={state}
+      />
+
+      {/* App Update Ready Banner */}
+      {isUpdateAvailable && (
+        <aside
+          aria-label="Application update available"
+          className="fixed bottom-3 right-3 z-50 max-w-sm bg-gradient-to-r from-emerald-600 to-teal-600 text-white p-3 rounded-2xl shadow-2xl border border-emerald-400/40 flex items-center gap-3"
+        >
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-black tracking-wide uppercase">App Update Ready</p>
+            <p className="text-[11px] text-emerald-100 truncate">A new version of CoachSub is available</p>
+          </div>
+          <button
+            onClick={() => forceUpdate()}
+            className="px-3 py-1.5 rounded-xl bg-white text-emerald-800 text-xs font-black shadow hover:bg-emerald-50 active:scale-95 transition shrink-0 cursor-pointer"
+          >
+            Update Now
+          </button>
+        </aside>
+      )}
 
       {/* Offline Status Indicator */}
       <OfflineIndicator />

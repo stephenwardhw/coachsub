@@ -304,6 +304,102 @@ export const FieldCanvas: React.FC<FieldCanvasProps> = ({ sport, goalSide, child
             )}
           </g>
         )}
+
+        {/* SPORT 5: RUGBY */}
+        {sport === 'rugby' && (
+          <g>
+            <rect width="1000" height="600" fill="url(#soccerStripes)" />
+            {/* Field boundary */}
+            <rect x="20" y="20" width="960" height="560" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="5" />
+
+            {isLeft ? (
+              <>
+                {/* In-Goal / Try Zone (Left side) */}
+                <rect x="20" y="20" width="130" height="560" fill="rgba(255,255,255,0.08)" />
+                {/* Dead-ball line at x=20 is part of outer border */}
+
+                {/* Try Line (Goal Line) at x=150 */}
+                <line x1="150" y1="20" x2="150" y2="580" stroke="#ffffff" strokeWidth="6" />
+
+                {/* Rugby H-shaped Goal Posts on Try Line */}
+                <g>
+                  {/* Goal post pads */}
+                  <rect x="144" y="260" width="12" height="12" fill="#facc15" stroke="#ffffff" strokeWidth="1.5" rx="3" />
+                  <rect x="144" y="328" width="12" height="12" fill="#facc15" stroke="#ffffff" strokeWidth="1.5" rx="3" />
+                  {/* Crossbar */}
+                  <line x1="150" y1="266" x2="150" y2="334" stroke="#ffffff" strokeWidth="5" />
+                  {/* Uprights shadow / uprights depth */}
+                  <line x1="150" y1="266" x2="110" y2="256" stroke="#ffffff" strokeWidth="3.5" />
+                  <line x1="150" y1="334" x2="110" y2="344" stroke="#ffffff" strokeWidth="3.5" />
+                </g>
+
+                {/* 5-meter dash line (5m from try line) */}
+                <line x1="200" y1="60" x2="200" y2="540" stroke="#ffffff" strokeWidth="3.5" strokeDasharray="15 15" />
+
+                {/* 22-meter Line */}
+                <line x1="370" y1="20" x2="370" y2="580" stroke="#ffffff" strokeWidth="5" />
+                <text x="380" y="45" fill="#ffffff" fillOpacity="0.75" fontSize="18" fontWeight="bold" fontFamily="sans-serif">22m</text>
+                <text x="380" y="570" fill="#ffffff" fillOpacity="0.75" fontSize="18" fontWeight="bold" fontFamily="sans-serif">22m</text>
+
+                {/* 10-meter dashed line (10m from halfway) */}
+                <line x1="820" y1="20" x2="820" y2="580" stroke="#ffffff" strokeWidth="4" strokeDasharray="20 15" />
+                <text x="830" y="45" fill="#ffffff" fillOpacity="0.75" fontSize="16" fontWeight="bold" fontFamily="sans-serif">10m</text>
+
+                {/* Halfway Line on Right */}
+                <line x1="975" y1="20" x2="975" y2="580" stroke="#ffffff" strokeWidth="6" />
+                <circle cx="975" cy="300" r="7" fill="#ffffff" />
+
+                {/* 5m & 15m Touchline Dash Marks */}
+                <line x1="150" y1="70" x2="975" y2="70" stroke="rgba(255,255,255,0.4)" strokeWidth="2.5" strokeDasharray="10 25" />
+                <line x1="150" y1="170" x2="975" y2="170" stroke="rgba(255,255,255,0.4)" strokeWidth="2.5" strokeDasharray="10 25" />
+                <line x1="150" y1="430" x2="975" y2="430" stroke="rgba(255,255,255,0.4)" strokeWidth="2.5" strokeDasharray="10 25" />
+                <line x1="150" y1="530" x2="975" y2="530" stroke="rgba(255,255,255,0.4)" strokeWidth="2.5" strokeDasharray="10 25" />
+              </>
+            ) : (
+              <>
+                {/* Halfway Line on Left */}
+                <line x1="25" y1="20" x2="25" y2="580" stroke="#ffffff" strokeWidth="6" />
+                <circle cx="25" cy="300" r="7" fill="#ffffff" />
+
+                {/* 10-meter dashed line (10m from halfway) */}
+                <line x1="180" y1="20" x2="180" y2="580" stroke="#ffffff" strokeWidth="4" strokeDasharray="20 15" />
+                <text x="150" y="45" fill="#ffffff" fillOpacity="0.75" fontSize="16" fontWeight="bold" fontFamily="sans-serif">10m</text>
+
+                {/* 22-meter Line */}
+                <line x1="630" y1="20" x2="630" y2="580" stroke="#ffffff" strokeWidth="5" />
+                <text x="590" y="45" fill="#ffffff" fillOpacity="0.75" fontSize="18" fontWeight="bold" fontFamily="sans-serif">22m</text>
+                <text x="590" y="570" fill="#ffffff" fillOpacity="0.75" fontSize="18" fontWeight="bold" fontFamily="sans-serif">22m</text>
+
+                {/* 5-meter dash line (5m from try line) */}
+                <line x1="800" y1="60" x2="800" y2="540" stroke="#ffffff" strokeWidth="3.5" strokeDasharray="15 15" />
+
+                {/* Try Line at x=850 */}
+                <line x1="850" y1="20" x2="850" y2="580" stroke="#ffffff" strokeWidth="6" />
+
+                {/* Rugby H-shaped Goal Posts on Try Line */}
+                <g>
+                  {/* Goal post pads */}
+                  <rect x="844" y="260" width="12" height="12" fill="#facc15" stroke="#ffffff" strokeWidth="1.5" rx="3" />
+                  <rect x="844" y="328" width="12" height="12" fill="#facc15" stroke="#ffffff" strokeWidth="1.5" rx="3" />
+                  {/* Crossbar */}
+                  <line x1="850" y1="266" x2="850" y2="334" stroke="#ffffff" strokeWidth="5" />
+                  {/* Uprights shadow */}
+                  <line x1="850" y1="266" x2="890" y2="256" stroke="#ffffff" strokeWidth="3.5" />
+                  <line x1="850" y1="334" x2="890" y2="344" stroke="#ffffff" strokeWidth="3.5" />
+                </g>
+
+                {/* In-Goal / Try Zone (Right side) */}
+                <rect x="850" y="20" width="130" height="560" fill="rgba(255,255,255,0.08)" />
+
+                {/* 5m & 15m Touchline Dash Marks */}
+                <line x1="25" y1="70" x2="850" y2="70" stroke="rgba(255,255,255,0.4)" strokeWidth="2.5" strokeDasharray="10 25" />
+                <line x1="25" y1="170" x2="850" y2="170" stroke="rgba(255,255,255,0.4)" strokeWidth="2.5" strokeDasharray="10 25" />
+                <line x1="25" y1="430" x2="850" y2="430" stroke="rgba(255,255,255,0.4)" strokeWidth="2.5" strokeDasharray="10 25" />
+                <line x1="25" y1="530" x2="850" y2="530" stroke="rgba(255,255,255,0.4)" strokeWidth="2.5" strokeDasharray="10 25" />
+              </>
+            )}
+          </g>
+        )}
       </svg>
 
       {/* Goal Direction Subtle Badge / Visual Helper */}

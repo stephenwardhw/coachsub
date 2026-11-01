@@ -1,4 +1,4 @@
-export type SportType = 'soccer' | 'hockey' | 'lacrosse' | 'field_hockey';
+export type SportType = 'soccer' | 'hockey' | 'lacrosse' | 'field_hockey' | 'rugby';
 
 export type GoalSide = 'left' | 'right';
 

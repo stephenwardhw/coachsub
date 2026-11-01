@@ -78,6 +78,34 @@ export const DEFAULT_FIELD_HOCKEY_ROSTER: Player[] = [
   { id: 'fh14', name: 'Sub Def', number: '16', position: 'DEF', color: '#0d9488', isOnField: false, fieldPosition: null, totalSeconds: 0 },
 ];
 
+export const DEFAULT_RUGBY_ROSTER: Player[] = [
+  // Forwards (Packs)
+  { id: 'rg1', name: 'Loosehead Prop', number: '1', position: 'PROP', color: '#b91c1c', isOnField: true, fieldPosition: { x: 38, y: 32 }, totalSeconds: 0 },
+  { id: 'rg2', name: 'Hooker', number: '2', position: 'HKR', color: '#b91c1c', isOnField: true, fieldPosition: { x: 38, y: 50 }, totalSeconds: 0 },
+  { id: 'rg3', name: 'Tighthead Prop', number: '3', position: 'PROP', color: '#b91c1c', isOnField: true, fieldPosition: { x: 38, y: 68 }, totalSeconds: 0 },
+  { id: 'rg4', name: 'Lock 4', number: '4', position: 'LOCK', color: '#b91c1c', isOnField: true, fieldPosition: { x: 30, y: 40 }, totalSeconds: 0 },
+  { id: 'rg5', name: 'Lock 5', number: '5', position: 'LOCK', color: '#b91c1c', isOnField: true, fieldPosition: { x: 30, y: 60 }, totalSeconds: 0 },
+  { id: 'rg6', name: 'Blindside Flanker', number: '6', position: 'FLK', color: '#b91c1c', isOnField: true, fieldPosition: { x: 26, y: 26 }, totalSeconds: 0 },
+  { id: 'rg7', name: 'Openside Flanker', number: '7', position: 'FLK', color: '#b91c1c', isOnField: true, fieldPosition: { x: 26, y: 74 }, totalSeconds: 0 },
+  { id: 'rg8', name: 'Number 8', number: '8', position: 'N8', color: '#b91c1c', isOnField: true, fieldPosition: { x: 22, y: 50 }, totalSeconds: 0 },
+  // Backs
+  { id: 'rg9', name: 'Scrum-half', number: '9', position: 'SH', color: '#b91c1c', isOnField: true, fieldPosition: { x: 48, y: 50 }, totalSeconds: 0 },
+  { id: 'rg10', name: 'Fly-half', number: '10', position: 'FH', color: '#b91c1c', isOnField: true, fieldPosition: { x: 56, y: 40 }, totalSeconds: 0 },
+  { id: 'rg11', name: 'Left Wing', number: '11', position: 'WG', color: '#b91c1c', isOnField: true, fieldPosition: { x: 74, y: 16 }, totalSeconds: 0 },
+  { id: 'rg12', name: 'Inside Centre', number: '12', position: 'IC', color: '#b91c1c', isOnField: true, fieldPosition: { x: 64, y: 35 }, totalSeconds: 0 },
+  { id: 'rg13', name: 'Outside Centre', number: '13', position: 'OC', color: '#b91c1c', isOnField: true, fieldPosition: { x: 70, y: 48 }, totalSeconds: 0 },
+  { id: 'rg14', name: 'Right Wing', number: '14', position: 'WG', color: '#b91c1c', isOnField: true, fieldPosition: { x: 74, y: 84 }, totalSeconds: 0 },
+  { id: 'rg15', name: 'Fullback', number: '15', position: 'FB', color: '#b91c1c', isOnField: true, fieldPosition: { x: 84, y: 50 }, totalSeconds: 0 },
+  // Bench (Finisher replacements)
+  { id: 'rg16', name: 'Sub Prop 1', number: '16', position: 'PROP', color: '#b91c1c', isOnField: false, fieldPosition: null, totalSeconds: 0 },
+  { id: 'rg17', name: 'Sub Hooker', number: '17', position: 'HKR', color: '#b91c1c', isOnField: false, fieldPosition: null, totalSeconds: 0 },
+  { id: 'rg18', name: 'Sub Prop 2', number: '18', position: 'PROP', color: '#b91c1c', isOnField: false, fieldPosition: null, totalSeconds: 0 },
+  { id: 'rg19', name: 'Sub Lock', number: '19', position: 'LOCK', color: '#b91c1c', isOnField: false, fieldPosition: null, totalSeconds: 0 },
+  { id: 'rg20', name: 'Sub Back Row', number: '20', position: 'FLK', color: '#b91c1c', isOnField: false, fieldPosition: null, totalSeconds: 0 },
+  { id: 'rg21', name: 'Sub Half-Back', number: '21', position: 'SH', color: '#b91c1c', isOnField: false, fieldPosition: null, totalSeconds: 0 },
+  { id: 'rg22', name: 'Sub Back', number: '22', position: 'UB', color: '#b91c1c', isOnField: false, fieldPosition: null, totalSeconds: 0 },
+];
+
 export function getDefaultState(): AppState {
   return {
     version: 2,
@@ -162,6 +190,8 @@ export function getPresetRosterForSport(sport: SportType): Player[] {
       return DEFAULT_LACROSSE_ROSTER;
     case 'field_hockey':
       return DEFAULT_FIELD_HOCKEY_ROSTER;
+    case 'rugby':
+      return DEFAULT_RUGBY_ROSTER;
     default:
       return DEFAULT_SOCCER_ROSTER;
   }

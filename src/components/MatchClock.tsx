@@ -11,8 +11,10 @@ import {
   History,
   Menu,
   X,
-  FileJson,
-  Timer,
+  Printer,
+  RefreshCw,
+  Sparkles,
+  CheckCircle2,
 } from 'lucide-react';
 
 interface MatchClockProps {
@@ -29,7 +31,13 @@ interface MatchClockProps {
   onRequestResetTimers: () => void;
   onOpenExportImport: () => void;
   onOpenTimeline: () => void;
+  onOpenPrintModal: () => void;
   subCount: number;
+  isUpdateAvailable: boolean;
+  isCheckingUpdate: boolean;
+  updateStatus: string | null;
+  onCheckForUpdates: () => void;
+  onForceUpdate: () => void;
 }
 
 const PERIOD_OPTIONS: Record<SportType, string[]> = {
@@ -37,6 +45,7 @@ const PERIOD_OPTIONS: Record<SportType, string[]> = {
   hockey: ['1st Per', '2nd Per', '3rd Per', 'OT', 'Shootout'],
   lacrosse: ['1st Qtr', '2nd Qtr', '3rd Qtr', '4th Qtr', 'OT'],
   field_hockey: ['1st Qtr', '2nd Qtr', '3rd Qtr', '4th Qtr', 'Shootout'],
+  rugby: ['1st Half', '2nd Half', 'Extra Time', 'Sudden Death'],
 };
 
 export const MatchClock: React.FC<MatchClockProps> = ({
@@ -53,7 +62,13 @@ export const MatchClock: React.FC<MatchClockProps> = ({
   onRequestResetTimers,
   onOpenExportImport,
   onOpenTimeline,
+  onOpenPrintModal,
   subCount,
+  isUpdateAvailable,
+  isCheckingUpdate,
+  updateStatus,
+  onCheckForUpdates,
+  onForceUpdate,
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -83,13 +98,14 @@ export const MatchClock: React.FC<MatchClockProps> = ({
         <select
           value={sport}
           onChange={(e) => onChangeSport(e.target.value as SportType)}
-          className="bg-slate-800/90 text-slate-100 text-xs font-bold rounded-lg border border-slate-700/80 px-1.5 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer shadow-xs max-w-[80px] sm:max-w-none"
+          className="bg-slate-800/90 text-slate-100 text-xs font-bold rounded-lg border border-slate-700/80 px-1.5 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer shadow-xs max-w-[82px] sm:max-w-none"
           title="Select Field Sport"
         >
           <option value="soccer" className="bg-slate-900">⚽ Soccer</option>
           <option value="hockey" className="bg-slate-900">🏒 Hockey</option>
           <option value="lacrosse" className="bg-slate-900">🥍 Lacrosse</option>
           <option value="field_hockey" className="bg-slate-900">🏑 F.Hockey</option>
+          <option value="rugby" className="bg-slate-900">🏉 Rugby</option>
         </select>
 
         {/* Flip Field Direction Button */}
@@ -160,6 +176,19 @@ export const MatchClock: React.FC<MatchClockProps> = ({
 
       {/* Right on Larger Screens: Directly Visible Buttons */}
       <div className="hidden sm:flex items-center gap-1.5 shrink-0">
+        {/* Update Notification Pill if update available */}
+        {isUpdateAvailable && (
+          <button
+            type="button"
+            onClick={onForceUpdate}
+            className="flex items-center gap-1 px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold text-xs shadow-md animate-pulse"
+            title="App update ready! Click to reload"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-white" />
+            <span className="text-white">Update Ready</span>
+          </button>
+        )}
+
         {/* Timeline Log Button */}
         <button
           type="button"
@@ -178,6 +207,16 @@ export const MatchClock: React.FC<MatchClockProps> = ({
               {subCount}
             </span>
           )}
+        </button>
+
+        {/* Printable PDF Report */}
+        <button
+          type="button"
+          onClick={onOpenPrintModal}
+          className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white transition active:scale-95"
+          title="Printable Match Report (PDF)"
+        >
+          <Printer className="w-3.5 h-3.5 text-blue-400" />
         </button>
 
         {/* Reset Timers (Warning Button) */}
@@ -210,20 +249,50 @@ export const MatchClock: React.FC<MatchClockProps> = ({
           className={`relative p-1.5 rounded-lg border transition active:scale-90 ${
             isMenuOpen
               ? 'bg-blue-600 border-blue-500 text-white'
+              : isUpdateAvailable
+              ? 'bg-emerald-600/90 border-emerald-400 text-white animate-pulse'
               : 'bg-slate-800 hover:bg-slate-700 border-slate-700 text-slate-200'
           }`}
           title="Open Menu"
           aria-label="Toggle menu"
         >
           {isMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-          {subCount > 0 && !isMenuOpen && (
+
+          {/* Update Available Badge */}
+          {isUpdateAvailable && !isMenuOpen && (
+            <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-emerald-400 ring-2 ring-slate-950 animate-ping" />
+          )}
+
+          {/* Sub Count Badge when no update */}
+          {!isUpdateAvailable && subCount > 0 && !isMenuOpen && (
             <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-slate-950" />
           )}
         </button>
 
         {/* Dropdown Menu Popup */}
         {isMenuOpen && (
-          <div className="absolute right-0 top-full mt-2 w-52 rounded-xl bg-slate-900 border border-slate-800 shadow-2xl p-1.5 z-50 text-white animate-fade-in divide-y divide-slate-800/60">
+          <div className="absolute right-0 top-full mt-2 w-56 rounded-xl bg-slate-900 border border-slate-800 shadow-2xl p-1.5 z-50 text-white animate-fade-in divide-y divide-slate-800/60 max-h-[85vh] overflow-y-auto">
+            {/* Update Banner in Menu */}
+            {isUpdateAvailable ? (
+              <div className="p-2 mb-1 bg-emerald-950/80 border border-emerald-500/60 rounded-lg space-y-1.5">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-300">
+                  <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Update Available!</span>
+                </div>
+                <p className="text-[10px] text-slate-300">A new version of CoachSub is ready.</p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    onForceUpdate();
+                  }}
+                  className="w-full py-1.5 rounded-md bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs text-center shadow transition active:scale-95"
+                >
+                  Install & Reload Now
+                </button>
+              </div>
+            ) : null}
+
             <div className="py-1 space-y-1">
               {/* Timeline Option */}
               <button
@@ -245,6 +314,19 @@ export const MatchClock: React.FC<MatchClockProps> = ({
                 )}
               </button>
 
+              {/* Printable PDF Report Option */}
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  onOpenPrintModal();
+                }}
+                className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg hover:bg-slate-800/80 text-left text-xs font-semibold text-slate-200 transition"
+              >
+                <Printer className="w-4 h-4 text-blue-400" />
+                <span>Print / Save PDF Report</span>
+              </button>
+
               {/* Download / Backup Option */}
               <button
                 type="button"
@@ -257,6 +339,34 @@ export const MatchClock: React.FC<MatchClockProps> = ({
                 <Download className="w-4 h-4 text-blue-400" />
                 <span>Backup / Export (JSON)</span>
               </button>
+            </div>
+
+            <div className="py-1 space-y-1">
+              {/* Check for App Updates / Force Update */}
+              <button
+                type="button"
+                onClick={() => {
+                  if (isUpdateAvailable) {
+                    setIsMenuOpen(false);
+                    onForceUpdate();
+                  } else {
+                    onCheckForUpdates();
+                  }
+                }}
+                className="w-full flex items-center justify-between px-2.5 py-2 rounded-lg hover:bg-slate-800/80 text-left text-xs font-semibold text-slate-200 transition"
+              >
+                <div className="flex items-center gap-2">
+                  <RefreshCw className={`w-4 h-4 text-emerald-400 ${isCheckingUpdate ? 'animate-spin' : ''}`} />
+                  <span>{isUpdateAvailable ? 'Force App Update' : 'Check for App Updates'}</span>
+                </div>
+              </button>
+
+              {/* Update status text */}
+              {updateStatus && (
+                <div className="px-2.5 py-1 text-[10px] text-emerald-300/90 font-medium bg-emerald-950/40 rounded">
+                  {updateStatus}
+                </div>
+              )}
             </div>
 
             <div className="py-1 space-y-1">
